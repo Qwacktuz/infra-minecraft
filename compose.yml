@@ -1,5 +1,5 @@
 services:
-  minecraft:
+  mc:
     image: itzg/minecraft-server:latest
     container_name: prd-hel1-mc-01
     restart: unless-stopped
@@ -22,7 +22,7 @@ services:
         lithium
         ferrite-core
         krypton
-        prometheus-exporter
+        fabricexporter
         simple-voice-chat
       online_mode: "TRUE"
     volumes:
@@ -40,13 +40,13 @@ services:
     environment:
       BACKUP_INTERVAL: "6h"
       PRUNE_BACKUPS_DAYS: 7
-      RCON_HOST: minecraft
+      RCON_HOST: mc
       RCON_PASSWORD: "${RCON_PASSWORD}"
     volumes:
       - ./data/minecraft:/data:ro
       - ./backups:/backups
     depends_on:
-      - minecraft
+      - mc
 
   # Monitoring Stack (Standardized)
   node-exporter:
