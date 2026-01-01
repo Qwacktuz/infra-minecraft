@@ -9,7 +9,7 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: "FABRIC"
-      VERSION: "1.21.1"
+      VERSION: "1.21.11"
       MEMORY: "6G"
       MOTD: "Welcome to anohter minecraft server :)"
       OPS: "${MC_OPS}"
@@ -27,11 +27,11 @@ services:
       online_mode: "TRUE"
     volumes:
       - ./data/minecraft:/data
-    # healthcheck:
-    #   test: ["CMD", "mc-health"]
-    #   interval: 1m
-    #   timeout: 5s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "mc-health"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
 
   backups:
     image: itzg/mc-backup
