@@ -1,0 +1,53 @@
+name: Deploy Minecraft
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: prd-hel1
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Copy Config Files
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ vars.HOST }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./compose.yml,./prometheus/"
+          target: "/home/${{ vars.USERNAME }}/mc-prod"
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        env:
+          RCON_PASSWORD: ${{ secrets.RCON_PASSWORD }}
+          GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}
+          MC_OPS: ${{ secrets.MC_OPS }}
+          MC_WHITELIST: ${{ secrets.MC_WHITELIST }}
+        with:
+          host: ${{ vars.HOST }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST
+          script: |
+            # Explicitly export the docker host for the non-interactive shell
+            export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
+            export PATH=/home/$HOME/bin:$PATH
+
+            mkdir -p $HOME/mc-prod
+            cd $HOME/mc-prod
+
+            # Generate .env file
+            printf "RCON_PASSWORD=%s\n" "$RCON_PASSWORD" > .env
+            printf "GRAFANA_PASSWORD=%s\n" "$GRAFANA_PASSWORD" >> .env
+            printf "MC_OPS=%s\n" "$MC_OPS" >> .env
+            printf "MC_WHITELIST=%s\n" "$MC_WHITELIST" >> .env
+            chmod 600 .env
+
+            # Deploy
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker system prune -f

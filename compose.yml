@@ -1,0 +1,84 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: prd-hel-mc-01
+    restart: unless-stopped
+    ports:
+      - "25565:25565"
+      - "25565:25565/udp"
+    environment:
+      EULA: "TRUE"
+      TYPE: "FABRIC"
+      VERSION: "1.21.1"
+      MEMORY: "6G"
+      MOTD: "Welcome to anohter minecraft server :)"
+      OPS: "${MC_OPS}"
+      WHITELIST: "${MC_WHITELIST}"
+      EXISTING_WHITELIST_FILE: "SYNC_FILE_MERGE_LIST"
+      ENABLE_WHITELIST: "TRUE"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      MODS: |
+        lithium
+        ferrite-core
+        krypton
+        prometheus-exporter
+        simple-voice-chat
+      online_mode: "TRUE"
+    volumes:
+      - ./data/minecraft:/data
+    # healthcheck:
+    #   test: ["CMD", "mc-health"]
+    #   interval: 1m
+    #   timeout: 5s
+    #   retries: 3
+
+  backups:
+    image: itzg/mc-backup
+    container_name: mc-backup
+    restart: unless-stopped
+    environment:
+      BACKUP_INTERVAL: "6h"
+      PRUNE_BACKUPS_DAYS: 7
+      RCON_HOST: minecraft
+      RCON_PASSWORD: "${RCON_PASSWORD}"
+    volumes:
+      - ./data/minecraft:/data:ro
+      - ./backups:/backups
+    depends_on:
+      - minecraft
+
+  # Monitoring Stack (Standardized)
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  prometheus_data:
+  grafana_data:
