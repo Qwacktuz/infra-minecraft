@@ -19,10 +19,15 @@ services:
       RCON_PASSWORD: ${RCON_PASSWORD}
       MODRINTH_PROJECTS: |
         fabric-api
-        lithium
-        ferrite-core
-        krypton
+        fabric-language-kotlin
         fabricexporter
+        krypton
+        ferrite-core
+        lithium
+        scalablelux
+        entityculling
+        c2me-fabric
+
         simple-voice-chat
       online_mode: "TRUE"
     volumes:
