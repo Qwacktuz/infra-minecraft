@@ -27,7 +27,7 @@ services:
         scalablelux
         entityculling
         c2me-fabric
-
+        memoryleakfix
         simple-voice-chat
       online_mode: "TRUE"
     volumes:
