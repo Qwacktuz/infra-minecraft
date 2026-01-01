@@ -27,6 +27,7 @@ services:
         scalablelux
         entityculling
         c2me-fabric
+        spark
         simple-voice-chat
       online_mode: "TRUE"
     volumes:
