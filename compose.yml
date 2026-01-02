@@ -34,6 +34,7 @@ services:
         c2me-fabric
         spark
         simple-voice-chat
+        distanthorizons
     volumes:
       - ./static/icon.png:/icon.png
       - ./data/minecraft:/data
