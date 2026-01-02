@@ -11,12 +11,17 @@ services:
       TYPE: "FABRIC"
       VERSION: "1.21.11"
       MEMORY: "6G"
-      MOTD: "Welcome to anohter minecraft server :)"
+      MOTD: "A %TYPE% server running minecraft %VERSION%"
+      ICON: "./icon.png"
+      OVERRIDE_ICON: "TRUE"
       OPS: "${MC_OPS}"
+      DIFFICULTY: "HARD"
+      ONLINE_MODE: "TRUE"
       WHITELIST: "${MC_WHITELIST}"
-      EXISTING_WHITELIST_FILE: "SYNC_FILE_MERGE_LIST"
+      ENFORCE_WHITELIST: "TRUE"
       ENABLE_WHITELIST: "TRUE"
       RCON_PASSWORD: ${RCON_PASSWORD}
+      USE_MEOWICE_FLAGS: "TRUE"
       MODRINTH_PROJECTS: |
         fabric-api
         fabric-language-kotlin
@@ -29,14 +34,14 @@ services:
         c2me-fabric
         spark
         simple-voice-chat
-      online_mode: "TRUE"
     volumes:
+      - ./static/icon.png:/icon.png
       - ./data/minecraft:/data
     healthcheck:
-      test: ["CMD", "mc-health"]
+      test: mc-health
       interval: 1m
       timeout: 5s
-      retries: 3
+      retries: 15
 
   backups:
     image: itzg/mc-backup
