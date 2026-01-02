@@ -22,6 +22,8 @@ services:
       ENABLE_WHITELIST: true
       RCON_PASSWORD: ${RCON_PASSWORD}
       USE_MEOWICE_FLAGS: true
+      USE_MEOWICE_GRAALVM_FLAGS: true
+      JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
       MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA # required for DH
       MODRINTH_PROJECTS: |
         fabric-api
