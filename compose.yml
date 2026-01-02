@@ -24,7 +24,7 @@ services:
       USE_MEOWICE_FLAGS: true
       USE_MEOWICE_GRAALVM_FLAGS: true
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
-      MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA # required for DH
+      MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA
       MODRINTH_PROJECTS: |
         fabric-api
         fabric-language-kotlin
@@ -37,7 +37,6 @@ services:
         c2me-fabric
         spark
         simple-voice-chat
-        distanthorizons
     volumes:
       - ./static/icon.png:/icon.png
       - ./data/minecraft:/data
