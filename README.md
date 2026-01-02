@@ -22,9 +22,12 @@ docker logs <container-name>
 # List logs from a compose service
 docker compose logs -f <service-name>
 
+# Minecraft healthcheck
+docker container inspect -f "{{.State.Health.Status}}" <container-name>
+
 # Spin up stack/stop stack
-docker compose down
 docker compose up -d
+docker compose down
 ```
 
 ### How to get old java console vibe (beware CTRL-C)
