@@ -7,21 +7,22 @@ services:
       - "25565:25565"
       - "25565:25565/udp"
     environment:
-      EULA: "TRUE"
-      TYPE: "FABRIC"
+      EULA: true
+      TYPE: FABRIC
       VERSION: "1.21.11"
-      MEMORY: "6G"
-      MOTD: "A %TYPE% server running minecraft %VERSION%"
+      MEMORY: 6G
+      MOTD: "%TYPE% server running minecraft %VERSION%"
       ICON: "/icon.png"
-      OVERRIDE_ICON: "TRUE"
+      OVERRIDE_ICON: true
       OPS: "${MC_OPS}"
-      DIFFICULTY: "HARD"
-      ONLINE_MODE: "TRUE"
+      DIFFICULTY: HARD
+      ONLINE_MODE: true
       WHITELIST: "${MC_WHITELIST}"
-      ENFORCE_WHITELIST: "TRUE"
-      ENABLE_WHITELIST: "TRUE"
+      ENFORCE_WHITELIST: true
+      ENABLE_WHITELIST: true
       RCON_PASSWORD: ${RCON_PASSWORD}
-      USE_MEOWICE_FLAGS: "TRUE"
+      USE_MEOWICE_FLAGS: true
+      MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA # required for DH
       MODRINTH_PROJECTS: |
         fabric-api
         fabric-language-kotlin
@@ -39,17 +40,18 @@ services:
       - ./static/icon.png:/icon.png
       - ./data/minecraft:/data
     healthcheck:
-      test: mc-health
+      test: ["CMD", "mc-health"]
       interval: 1m
       timeout: 5s
       retries: 15
+      start_period: 2m
 
   backups:
     image: itzg/mc-backup
     container_name: mc-backup
     restart: unless-stopped
     environment:
-      BACKUP_INTERVAL: "6h"
+      BACKUP_INTERVAL: 6h
       PRUNE_BACKUPS_DAYS: 7
       RCON_HOST: mc
       RCON_PASSWORD: "${RCON_PASSWORD}"
@@ -57,7 +59,8 @@ services:
       - ./data/minecraft:/data:ro
       - ./backups:/backups
     depends_on:
-      - mc
+      mc:
+        condition: service_healthy
 
   # Monitoring Stack (Standardized)
   node-exporter:
