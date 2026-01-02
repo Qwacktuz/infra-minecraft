@@ -41,6 +41,8 @@ services:
         c2me-fabric
         spark
         simple-voice-chat
+      RCON_CMDS_STARTUP: |-
+        gamerule playersSleepingPercentage 0
     volumes:
       - ./static/icon.png:/icon.png
       - ./data/minecraft:/data
