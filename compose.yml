@@ -11,12 +11,15 @@ services:
       TYPE: FABRIC
       VERSION: "1.21.11"
       MEMORY: 6G
-      MOTD: "%TYPE% server running minecraft %VERSION%"
+      MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%"
       ICON: "/icon.png"
       OVERRIDE_ICON: true
       OPS: "${MC_OPS}"
       DIFFICULTY: HARD
       ONLINE_MODE: true
+      LEVEL: "world" # change world
+      VIEW_DISTANCE: 32
+      SIMULATION_DISTANCE: 12
       WHITELIST: "${MC_WHITELIST}"
       ENFORCE_WHITELIST: true
       ENABLE_WHITELIST: true
