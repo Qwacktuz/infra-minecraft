@@ -49,3 +49,9 @@ and execute `docker attach mc` in a shell
 - Implement pelican Panel or Pterodactyl installation
 - Add instance to a tailnet
 - Look for further hardening
+
+---
+
+## Resources
+
+- Running docker rootless <https://docs.docker.com/engine/security/rootless/>
