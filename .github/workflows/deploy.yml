@@ -11,10 +11,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
+      - name: Authenticate with Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --ephemeral
+
       - name: Copy Config Files
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ vars.HOST }}
+          host: ${{ vars.TS_HOST }}
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./compose.yml,./prometheus/,./static/"
