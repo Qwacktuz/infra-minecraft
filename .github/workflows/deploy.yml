@@ -47,7 +47,7 @@ jobs:
             mkdir -p $HOME/mc-prod
             cd $HOME/mc-prod
 
-            printf "TS_IP=%s\n" "$(tailscale ip -4)" >> .env
+            printf "TS_IP=%s\n" "$(/usr/bin/tailscale ip -4)" >> .env
             printf "DOCKER_UID=%s\n" "$(id -u)" > .env
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
 
