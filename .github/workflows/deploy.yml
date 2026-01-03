@@ -35,7 +35,7 @@ jobs:
           MC_OPS: ${{ secrets.MC_OPS }}
           MC_WHITELIST: ${{ secrets.MC_WHITELIST }}
         with:
-          host: ${{ vars.HOST }}
+          host: ${{ vars.TS_HOST }}
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST
