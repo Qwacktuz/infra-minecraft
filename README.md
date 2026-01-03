@@ -47,8 +47,8 @@ and execute `docker attach mc` in a shell
 
 - Move stack to Terraform or OpenTofu
 - Implement pelican Panel or Pterodactyl installation
-- Add instance to a tailnet
 - Look for further hardening
+- Set up `tailscale cert <full-domain>` from the VPS to enable HTTPS with mDNS
 
 ---
 
