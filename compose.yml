@@ -115,8 +115,6 @@ services:
       # Map the docker socket
       - /run/user/${DOCKER_UID:-1000}/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    # Portainer might need to run as the same user to read the socket
-    user: "${DOCKER_UID:-1000}:${DOCKER_UID:-1000}"
 
 volumes:
   prometheus_data:
