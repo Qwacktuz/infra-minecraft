@@ -138,8 +138,6 @@ services:
     image: grafana/alloy:latest
     container_name: alloy
     restart: unless-stopped
-    # Run as user so it can read logs
-    user: "${DOCKER_UID}:${DOCKER_GID}"
     ports:
       - "${TS_IP}:12345:12345"
     command:
