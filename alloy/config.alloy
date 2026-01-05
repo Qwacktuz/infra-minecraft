@@ -8,6 +8,16 @@ loki.source.docker "logs" {
   forward_to = [loki.process.mc_processing.receiver]
 }
 
+loki.source.api "listener" {
+    http {
+        listen_address = "127.0.0.1"
+        listen_port    = 3100
+    }
+    labels = { "source" = "api" }
+    forward_to = [loki.process.mc_processing.receiver]
+}
+
+
 loki.process "mc_processing" {
   stage.docker { } 
 
