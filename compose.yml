@@ -46,7 +46,6 @@ services:
         no-chat-reports
         chunky
         bluemap
-        lmd
         simple-voice-chat
         #plasmo-voice # TODO: migrate from svc
         calcmod
