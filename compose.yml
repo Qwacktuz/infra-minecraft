@@ -61,7 +61,6 @@ services:
         # yungs-better-whitch-huts
         # yungs-bridges
         # yungs-extras
-        terra
         calcmod
         appleskin
         emotecraft
