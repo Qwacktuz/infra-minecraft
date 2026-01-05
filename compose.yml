@@ -44,7 +44,6 @@ services:
         clumps
         alternate-current
         chunky
-        chunkyborder
         bluemap
         worldedit
         axiom
