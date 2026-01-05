@@ -187,3 +187,4 @@ volumes:
   loki_data:
   grafana_data:
   portainer_data:
+  alloy_data:
