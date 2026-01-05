@@ -52,6 +52,7 @@ jobs:
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
 
             # Generate .env file
+            printf "USERNAME=%s\n" "$(whoami)" >> .env
             printf "RCON_PASSWORD=%s\n" "$RCON_PASSWORD" > .env
             printf "GRAFANA_PASSWORD=%s\n" "$GRAFANA_PASSWORD" >> .env
             printf "MC_OPS=%s\n" "$MC_OPS" >> .env

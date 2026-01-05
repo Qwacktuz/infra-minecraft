@@ -1,0 +1,44 @@
+discovery.docker "minecraft_containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+loki.source.docker "docker_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.minecraft_containers.targets
+  forward_to = [loki.process.mc_log_processing.receiver]
+}
+
+loki.process "mc_log_processing" {
+  stage.docker { } 
+
+  stage.multiline {
+    firstline     = "^\\[\\d{2}:\\d{2}:\\d{2}\\]"
+    max_wait_time = "3s"
+  }
+
+  stage.labels {
+    values = {
+      container = "container_name",
+    }
+  }
+
+  forward_to = [loki.write.local_loki.receiver]
+}
+
+loki.write "local_loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+
+prometheus.scrape "minecraft_metrics" {
+  targets = [{"__address__" = "mc:25585"}]
+  forward_to = [prometheus.remote_write.local_prometheus.receiver]
+}
+
+prometheus.remote_write "local_prometheus" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
