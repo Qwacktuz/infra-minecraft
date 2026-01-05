@@ -34,15 +34,41 @@ services:
         fabric-api
         fabric-language-kotlin
         fabricexporter
+        spark
         krypton
         ferrite-core
         lithium
         scalablelux
-        entityculling
         c2me-fabric
+        entityculling
+        clumps
         alternate-current
-        spark
+        chunky
+        chunkyborder
+        bluemap
+        worldedit
+        axiom
+        carpet
+        netherportalfix
+        # packet-fixer
+        luckperms
+        # yungs-better-nether-fortresses
+        # yungs-better-ocean-monuments
+        # yungs-better-dungeons
+        # yungs-better-mineshafts
+        # yungs-better-jungle-temples
+        # yungs-better-end-island
+        # yungs-better-strongholds
+        # yungs-better-whitch-huts
+        # yungs-bridges
+        # yungs-extras
+        terra
+        calcmod
+        appleskin
+        emotecraft
+        no-chat-reports
         simple-voice-chat
+        #plasmo-voice # TODO: migrate from svc
       RCON_CMDS_STARTUP: |-
         gamerule players_sleeping_percentage 0
     volumes:
