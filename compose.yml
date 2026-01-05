@@ -18,7 +18,7 @@ services:
       OPS: "${MC_OPS}"
       DIFFICULTY: HARD
       ONLINE_MODE: true
-      LEVEL: "old_world" # change world
+      LEVEL: "world"
       VIEW_DISTANCE: 16
       SPAWN_PROTECTION: 0
       SIMULATION_DISTANCE: 10
