@@ -49,6 +49,7 @@ services:
         axiom
         carpet
         netherportalfix
+        balm # netherportalfix dep
         # packet-fixer
         luckperms
         # yungs-better-nether-fortresses
@@ -64,6 +65,7 @@ services:
         calcmod
         appleskin
         emotecraft
+        player-animation-library # emotecraft dep
         no-chat-reports
         simple-voice-chat
         #plasmo-voice # TODO: migrate from svc
