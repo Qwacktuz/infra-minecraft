@@ -1,25 +1,32 @@
-discovery.docker "minecraft_containers" {
+# server {
+#   http {
+#     listen_addr = "0.0.0.0"
+#     listen_port = 12345
+#   }
+# }
+
+discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
 
-loki.source.docker "docker_logs" {
+loki.source.docker "logs" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.docker.minecraft_containers.targets
-  forward_to = [loki.process.mc_log_processing.receiver]
+  targets    = discovery.docker.containers.targets
+  forward_to = [loki.process.mc_processing.receiver]
 }
 
-loki.process "mc_log_processing" {
+loki.process "mc_processing" {
   stage.docker { } 
+
+  stage.labels {
+    values = {
+      container = "prd-hel1-mc-01",
+    }
+  }
 
   stage.multiline {
     firstline     = "^\\[\\d{2}:\\d{2}:\\d{2}\\]"
     max_wait_time = "3s"
-  }
-
-  stage.labels {
-    values = {
-      container = "container_name",
-    }
   }
 
   forward_to = [loki.write.local_loki.receiver]
@@ -31,13 +38,17 @@ loki.write "local_loki" {
   }
 }
 
-
-prometheus.scrape "minecraft_metrics" {
-  targets = [{"__address__" = "mc:25585"}]
-  forward_to = [prometheus.remote_write.local_prometheus.receiver]
+prometheus.scrape "node_exporter" {
+  targets = [{"__address__" = "node-exporter:9100"}]
+  forward_to = [prometheus.remote_write.local_prom.receiver]
 }
 
-prometheus.remote_write "local_prometheus" {
+prometheus.scrape "minecraft" {
+  targets = [{"__address__" = "mc:25585"}]
+  forward_to = [prometheus.remote_write.local_prom.receiver]
+}
+
+prometheus.remote_write "local_prom" {
   endpoint {
     url = "http://prometheus:9090/api/v1/write"
   }

@@ -1,10 +1,11 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 10s
 
 scrape_configs:
-  - job_name: "minecraft"
-    static_configs:
-      - targets: ["mc:25585"]
+  # DELETE the minecraft job here. Alloy is handling it.
+  # - job_name: "minecraft"
+  #   static_configs:
+  #     - targets: ["mc:25585"]
 
   - job_name: "node_exporter"
     static_configs:
