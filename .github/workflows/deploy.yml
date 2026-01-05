@@ -46,14 +46,15 @@ jobs:
 
             mkdir -p $HOME/mc-prod
             cd $HOME/mc-prod
+            : > .env
 
             printf "TS_IP=%s\n" "$(/usr/bin/tailscale ip -4)" >> .env
-            printf "DOCKER_UID=%s\n" "$(id -u)" > .env
+            printf "DOCKER_UID=%s\n" "$(id -u)" >> .env
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
 
             # Generate .env file
             printf "USERNAME=%s\n" "$(whoami)" >> .env
-            printf "RCON_PASSWORD=%s\n" "$RCON_PASSWORD" > .env
+            printf "RCON_PASSWORD=%s\n" "$RCON_PASSWORD" >> .env
             printf "GRAFANA_PASSWORD=%s\n" "$GRAFANA_PASSWORD" >> .env
             printf "MC_OPS=%s\n" "$MC_OPS" >> .env
             printf "MC_WHITELIST=%s\n" "$MC_WHITELIST" >> .env
