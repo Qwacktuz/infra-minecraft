@@ -43,15 +43,23 @@ services:
         entityculling
         clumps
         alternate-current
+        no-chat-reports
         chunky
         bluemap
-        worldedit
-        axiom
-        carpet
+        lmd
+        simple-voice-chat
+        #plasmo-voice # TODO: migrate from svc
+        calcmod
+        appleskin
         netherportalfix
         balm # netherportalfix dep
+        emotecraft
+        player-animation-library # emotecraft dep
+        # worldedit
+        # axiom
+        # carpet
         # packet-fixer
-        luckperms
+        # luckperms
         # yungs-better-nether-fortresses
         # yungs-better-ocean-monuments
         # yungs-better-dungeons
@@ -62,13 +70,6 @@ services:
         # yungs-better-whitch-huts
         # yungs-bridges
         # yungs-extras
-        calcmod
-        appleskin
-        emotecraft
-        player-animation-library # emotecraft dep
-        no-chat-reports
-        simple-voice-chat
-        #plasmo-voice # TODO: migrate from svc
       RCON_CMDS_STARTUP: |-
         gamerule players_sleeping_percentage 0
     volumes:
