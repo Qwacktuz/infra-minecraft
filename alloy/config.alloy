@@ -1,3 +1,10 @@
+server {
+  http {
+    listen_addr = "0.0.0.0"
+    listen_port = 12345
+  }
+}
+
 discovery.docker "minecraft_containers" {
   host = "unix:///var/run/docker.sock"
 }
