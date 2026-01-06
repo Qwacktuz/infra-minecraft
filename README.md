@@ -45,12 +45,13 @@ and execute `docker attach mc` in a shell
 
 ## TODO
 
-- Implement loki and grafana alloy
+- Implement Loki and Grafana Alloy
 - Find a easier way to whitelist people
 - Move stack to Terraform or OpenTofu
   - Implement pelican panel or pterodactyl panel
 - Look for further hardening
   - Set up `tailscale cert <full-domain>` from the VPS to enable HTTPS with mDNS
+- Look into fastback (or equivalent) and remote off-site backups
 
 ---
 

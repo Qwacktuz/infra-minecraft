@@ -1,7 +1,7 @@
 services:
-  mc:
+  minecraft-service:
     image: itzg/minecraft-server:java25-graalvm
-    container_name: prd-hel1-mc-01
+    container_name: fabric-server
     restart: unless-stopped
     ports:
       - "25565:25565"
@@ -10,25 +10,38 @@ services:
     environment:
       EULA: true
       TYPE: FABRIC
-      VERSION: "1.21.11"
-      MEMORY: 6G
-      MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%"
+      VERSION: LATEST
+      MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%.\ Aka A §g§lminecraft§r §u-.-§r §5§mServer§r\\nmade by §a§kkaktus"
       ICON: "/icon.png"
       OVERRIDE_ICON: true
-      OPS: "${MC_OPS}"
-      DIFFICULTY: HARD
-      ONLINE_MODE: true
       LEVEL: "world"
+      ONLINE_MODE: true
+
+      MAX_PLAYERS: "20"
+      DIFFICULTY: HARD
+      MODE: "SURVIVAL"
+      PVP: "TRUE"
+
       VIEW_DISTANCE: 16
       SPAWN_PROTECTION: 0
       SIMULATION_DISTANCE: 10
+
+      EXISTING_OPS_FILE: "SYNCHRONIZE"
+      OPS: "${MC_OPS}"
+      EXISTING_WHITELIST_FILE: "SYNCHRONIZE"
       WHITELIST: "${MC_WHITELIST}"
       ENFORCE_WHITELIST: true
       ENABLE_WHITELIST: true
+
       RCON_PASSWORD: ${RCON_PASSWORD}
+
       USE_MEOWICE_FLAGS: true
       USE_MEOWICE_GRAALVM_FLAGS: true
+      MEMORY: 6G
+      MAX_MEMORY: 6G
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
+
+      REMOVE_OLD_MODS: true
       MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA
       MODRINTH_PROJECTS: |
         fabric-api
@@ -43,7 +56,10 @@ services:
         entityculling
         clumps
         alternate-current
+        servercore
+        #fastback
         no-chat-reports
+        view-distance-fix
         chunky
         bluemap
         simple-voice-chat
@@ -80,22 +96,47 @@ services:
       timeout: 5s
       retries: 15
       start_period: 2m
+    networks:
+      minecraft-network:
+        aliases:
+          - mc-server
 
   backups:
     image: itzg/mc-backup
     container_name: mc-backup
     restart: unless-stopped
     environment:
+      INITIAL_DELAY: 1m
       BACKUP_INTERVAL: 6h
-      PRUNE_BACKUPS_DAYS: 7
-      RCON_HOST: mc
+      PRUNE_BACKUPS_DAYS: 3
+      PRUNE_BACKUPS_COUNT: 5
+      RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
     volumes:
       - ./data/minecraft:/data:ro
       - ./backups:/backups
     depends_on:
-      mc:
+      minecraft-service:
         condition: service_healthy
+    networks:
+      minecraft-network:
+        aliases:
+          - mc-backup
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "${TS_IP}:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      minecraft-network:
+        aliases:
+          - grafana
 
   # Gather node data
   node-exporter:
@@ -111,6 +152,10 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+    networks:
+      minecraft-network:
+        aliases:
+          - node-exporter
 
   # Collect metrics
   prometheus:
@@ -126,16 +171,26 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+    networks:
+      minecraft-network:
+        aliases:
+          - prometheus
 
   # Collect logs
   loki:
     image: grafana/loki:latest
     container_name: loki
     restart: unless-stopped
-    command: "-config.file=/etc/loki/local-config.yaml"
-    volumes:
-      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
-      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    # command: "-config.file=/etc/loki/local-config.yaml"
+    # volumes:
+    #   - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+    #   - loki_data:/loki
+    networks:
+      minecraft-network:
+        aliases:
+          - loki
 
   # Telemetry pipeline (forward data to loki/prometheus)
   alloy:
@@ -159,17 +214,10 @@ services:
       - alloy_data:/var/lib/alloy/data
     depends_on:
       - loki
-
-  grafana:
-    image: grafana/grafana-oss:latest
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "${TS_IP}:3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-    volumes:
-      - grafana_data:/var/lib/grafana
+    networks:
+      minecraft-network:
+        aliases:
+          - alloy
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -181,6 +229,14 @@ services:
       # Map the docker socket
       - /run/user/${DOCKER_UID:-1000}/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    networks:
+      minecraft-network:
+        aliases:
+          - portainer
+
+networks:
+  minecraft-network:
+    name: minecraft
 
 volumes:
   prometheus_data:
