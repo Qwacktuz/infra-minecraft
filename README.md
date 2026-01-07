@@ -46,7 +46,7 @@ and execute `docker attach mc` in a shell
 ## TODO
 
 - Implement Loki and Grafana Alloy
-- Find a easier way to whitelist people
+- Find a easier way to whitelist people -> portainer? 🤔
 - Move stack to Terraform or OpenTofu
   - Implement pelican panel or pterodactyl panel
 - Look for further hardening
