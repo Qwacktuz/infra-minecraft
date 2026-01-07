@@ -46,13 +46,35 @@ jobs:
 
             mkdir -p $HOME/mc-prod
             cd $HOME/mc-prod
-            : > .env
 
+            if docker compose ps --services --filter "status=running" | grep -q "minecraft-service"; then
+              echo "Minecraft server is running. Sending restart notifications..."
+
+              # Send a big title on screen
+              docker compose exec -T minecraft-service rcon-cli "title @a title {\"text\":\"Update Incoming!\", \"color\":\"red\"}"
+              docker compose exec -T minecraft-service rcon-cli "title @a subtitle {\"text\":\"Server restart in 30s\", \"color\":\"yellow\"}"
+
+              # Send chat message
+              docker compose exec -T minecraft-service rcon-cli "say §cServer is updating and restarting in 30 seconds."
+              sleep 20
+
+              # Final countdown
+              docker compose exec -T minecraft-service rcon-cli "say §cServer restarting in 10 seconds!"
+              docker compose exec -T minecraft-service rcon-cli "title @a title {\"text\":\"Restarting!\", \"color\":\"red\"}"
+              sleep 10
+
+              # Force a save just in case
+              docker compose exec -T minecraft-service rcon-cli "save-all"
+              docker compose exec -T minecraft-service rcon-cli "say §cRestaring now. See you on the other side ;)"
+            else
+              echo "Server is not running. Skipping notifications."
+            fi
+
+            # Generate .env file
+            : > .env
             printf "TS_IP=%s\n" "$(/usr/bin/tailscale ip -4)" >> .env
             printf "DOCKER_UID=%s\n" "$(id -u)" >> .env
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
-
-            # Generate .env file
             printf "USERNAME=%s\n" "$(whoami)" >> .env
             printf "RCON_PASSWORD=%s\n" "$RCON_PASSWORD" >> .env
             printf "GRAFANA_PASSWORD=%s\n" "$GRAFANA_PASSWORD" >> .env
