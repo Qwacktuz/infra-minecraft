@@ -40,7 +40,7 @@ services:
       MEMORY: 6G
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
 
-      REMOVE_OLD_MODS: true
+      REMOVE_OLD_MODS: false
       MODRINTH_PROJECTS_DEFAULT_VERSION_TYPE: BETA
       MODRINTH_PROJECTS: |
         fabric-api
