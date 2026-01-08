@@ -89,13 +89,15 @@ jobs:
             docker compose up -d --remove-orphans
             docker system prune -f
 
-            if docker compose ps --services --filter "status=running" | grep -q "minecraft-service"; then
-              echo "Server is up! Sending welcome back message."
+            # FIXME: post deployment message -> move to shellscript?
 
-              docker compose exec -T minecraft-service rcon-cli "title @a clear"
-              docker compose exec -T minecraft-service rcon-cli "playsound entity.player.levelup master @a"
-              docker compose exec -T minecraft-service rcon-cli "say §aDeployment complete! Server is stable."
-              docker compose exec -T minecraft-service rcon-cli "title @a actionbar {\"text\":\"§aSystem Update Complete\", \"bold\":true}"
-            else 
-              echo "Server not restarted yet, skipping notifications"
-            fi
+            # if docker compose ps --services --filter "status=running" | grep -q "minecraft-service"; then
+            #   echo "Server is up! Sending welcome back message."
+            #
+            #   docker compose exec -T minecraft-service rcon-cli "title @a clear"
+            #   docker compose exec -T minecraft-service rcon-cli "playsound entity.player.levelup master @a"
+            #   docker compose exec -T minecraft-service rcon-cli "say §aDeployment complete! Server is stable."
+            #   docker compose exec -T minecraft-service rcon-cli "title @a actionbar {\"text\":\"§aSystem Update Complete\", \"bold\":true}"
+            # else 
+            #   echo "Server not restarted yet, skipping notifications"
+            # fi
