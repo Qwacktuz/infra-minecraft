@@ -52,20 +52,20 @@ jobs:
 
               # Send a big title on screen
               docker compose exec -T minecraft-service rcon-cli "title @a title {\"text\":\"Update Incoming!\", \"color\":\"red\"}"
-              docker compose exec -T minecraft-service rcon-cli "title @a subtitle {\"text\":\"Server restart in 30s\", \"color\":\"yellow\"}"
+              docker compose exec -T minecraft-service rcon-cli "title @a subtitle {\"text\":\"Server might restart in 30s\", \"color\":\"yellow\"}"
 
               # Send chat message
-              docker compose exec -T minecraft-service rcon-cli "say §cServer is updating and restarting in 30 seconds."
+              docker compose exec -T minecraft-service rcon-cli "say §cServer is updating and might restart in 20 seconds."
               sleep 20
 
               # Final countdown
-              docker compose exec -T minecraft-service rcon-cli "say §cServer restarting in 10 seconds!"
-              docker compose exec -T minecraft-service rcon-cli "title @a title {\"text\":\"Restarting!\", \"color\":\"red\"}"
+              docker compose exec -T minecraft-service rcon-cli "say §cServer might restart in 10 seconds!"
+              docker compose exec -T minecraft-service rcon-cli "title @a title {\"text\":\"Attempting to restart!\", \"color\":\"red\"}"
               sleep 10
 
               # Force a save just in case
               docker compose exec -T minecraft-service rcon-cli "save-all"
-              docker compose exec -T minecraft-service rcon-cli "say §cRestaring now. See you on the other side ;)"
+              docker compose exec -T minecraft-service rcon-cli "say §cIf nothing happens, minecraft service was not affected by update"
             else
               echo "Server is not running. Skipping notifications."
             fi
@@ -84,5 +84,18 @@ jobs:
 
             # Deploy
             docker compose pull
+
+            # Might want to remove --force-recreate if working on other parts of thes server stack
             docker compose up -d --remove-orphans
             docker system prune -f
+
+            if docker compose ps --services --filter "status=running" | grep -q "minecraft-service"; then
+              echo "Server is up! Sending welcome back message."
+
+              docker compose exec -T minecraft-service rcon-cli "title @a clear"
+              docker compose exec -T minecraft-service rcon-cli "playsound entity.player.levelup master @a"
+              docker compose exec -T minecraft-service rcon-cli "say §aDeployment complete! Server is stable."
+              docker compose exec -T minecraft-service rcon-cli "title @a actionbar {\"text\":\"§aSystem Update Complete\", \"bold\":true}"
+            else 
+              echo "Server not restarted yet, skipping notifications"
+            fi
