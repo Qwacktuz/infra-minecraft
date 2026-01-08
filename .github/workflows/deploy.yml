@@ -55,7 +55,7 @@ jobs:
               docker compose exec -T minecraft-service rcon-cli "title @a subtitle {\"text\":\"Server might restart in 30s\", \"color\":\"yellow\"}"
 
               # Send chat message
-              docker compose exec -T minecraft-service rcon-cli "say §cServer is updating and might restart in 20 seconds."
+              docker compose exec -T minecraft-service rcon-cli "say §cServer is updating and might restart in 30 seconds."
               sleep 20
 
               # Final countdown
@@ -65,7 +65,7 @@ jobs:
 
               # Force a save just in case
               docker compose exec -T minecraft-service rcon-cli "save-all"
-              docker compose exec -T minecraft-service rcon-cli "say §cIf nothing happens, minecraft service was not affected by update"
+              docker compose exec -T minecraft-service rcon-cli "say §cIf nothing happens, minecraft service was not affected by the update"
             else
               echo "Server is not running. Skipping notifications."
             fi
