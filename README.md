@@ -52,6 +52,7 @@ and execute `docker attach mc` in a shell
 - Look for further hardening
   - Set up `tailscale cert <full-domain>` from the VPS to enable HTTPS with mDNS
 - Look into fastback (or equivalent) and remote off-site backups
+- Refactor secrets management to use [docker compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) (my version is a bit hacky)
 
 ---
 
