@@ -37,7 +37,7 @@ services:
 
       USE_MEOWICE_FLAGS: true
       USE_MEOWICE_GRAALVM_FLAGS: true
-      MEMORY: 6G
+      MEMORY: 5G
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
 
       REMOVE_OLD_MODS: false
