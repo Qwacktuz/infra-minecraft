@@ -65,7 +65,7 @@ jobs:
 
               # Force a save just in case
               docker compose exec -T minecraft-service rcon-cli "save-all"
-              docker compose exec -T minecraft-service rcon-cli "say §cIf nothing happens, minecraft service was not affected by the update"
+              docker compose exec -T minecraft-service rcon-cli "say §cIf nothing happens, minecraft service was not affected by the update and it wont restart"
             else
               echo "Server is not running. Skipping notifications."
             fi
