@@ -38,7 +38,6 @@ services:
       USE_MEOWICE_FLAGS: true
       USE_MEOWICE_GRAALVM_FLAGS: true
       MEMORY: 6G
-      MAX_MEMORY: 6G
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCompactObjectHeaders" # not in meowice yet
 
       REMOVE_OLD_MODS: true
@@ -96,6 +95,10 @@ services:
       timeout: 5s
       retries: 15
       start_period: 2m
+    deploy:
+      resources:
+        limits:
+          memory: 6.5G
     networks:
       minecraft-network:
         aliases:
