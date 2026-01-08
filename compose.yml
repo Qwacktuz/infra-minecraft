@@ -92,7 +92,7 @@ services:
     healthcheck:
       test: ["CMD", "mc-health"]
       interval: 1m
-      timeout: 5s
+      timeout: 20s
       retries: 15
       start_period: 2m
     deploy:
@@ -109,7 +109,7 @@ services:
     container_name: mc-backup
     restart: unless-stopped
     environment:
-      INITIAL_DELAY: 1m
+      INITIAL_DELAY: 5m
       BACKUP_INTERVAL: 6h
       PRUNE_BACKUPS_DAYS: 3
       PRUNE_BACKUPS_COUNT: 5
