@@ -49,7 +49,7 @@ rsync -avzP ./local_minecraft_world/ prd-hel1-mc-01:~/mc-prod/data/minecraft/wor
 
 # Give Minecraft the correct permissions
 # ssh into the VPS
-sudo chown -R 100999:100999 ~/mc-prod/data/minecraft
+ssh -t prd-hel1-mc-01 "sudo chown -R 100999:100999 ~/mc-prod/data/minecraft && echo '✅ success!'"
 ```
 
 ### How to get old java console vibe (beware CTRL-C)
