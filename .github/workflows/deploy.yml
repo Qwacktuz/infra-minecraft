@@ -98,6 +98,9 @@ jobs:
             # Deploy
             docker compose pull
 
+            echo "Clearing Restic zombie locks before deployment..."
+            docker compose run --rm -e INITIAL_DELAY=0s backups restic unlock --remove-all || echo "No locks to clear."
+
             # Might want to remove --force-recreate if working on other parts of thes server stack
             docker compose up -d --remove-orphans
             docker system prune -f
