@@ -47,12 +47,12 @@ and execute `docker attach mc` in a shell
 
 - Implement Loki and Grafana Alloy
 - Find a easier way to whitelist people -> portainer? 🤔
-- Move stack to Terraform or OpenTofu
+- Move stack to OpenTofu (OSS Terraform)
   - Implement pelican panel or pterodactyl panel
 - Look for further hardening
   - Set up `tailscale cert <full-domain>` from the VPS to enable HTTPS with mDNS
-- Look into fastback (or equivalent) and remote off-site backups
-- Refactor secrets management to use [docker compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) (my version is a bit hacky)
+- ~~Look into fastback (or equivalent) and remote off-site backups~~
+- Refactor secrets management to use [docker compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) or maybe sops (my version is a bit hacky)
 
 ---
 
