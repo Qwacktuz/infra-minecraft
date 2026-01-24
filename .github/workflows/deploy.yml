@@ -38,13 +38,14 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          RESTIC_PASSWORD: ${{ secrets.RESTIC_PASSWORD }}
           # --- R2 ADDITION END ---
         with:
           host: ${{ vars.TS_HOST }}
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Added R2 vars to the envs list
-          envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY,R2_ENDPOINT
+          envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY,R2_ENDPOINT,RESTIC_PASSWORD
           script: |
             # Explicitly export the docker host for the non-interactive shell
             export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
@@ -90,6 +91,7 @@ jobs:
             printf "R2_ACCESS_KEY_ID=%s\n" "$R2_ACCESS_KEY_ID" >> .env
             printf "R2_SECRET_ACCESS_KEY=%s\n" "$R2_SECRET_ACCESS_KEY" >> .env
             printf "R2_ENDPOINT=%s\n" "$R2_ENDPOINT" >> .env
+            printf "RESTIC_PASSWORD='%s'\n" "$RESTIC_PASSWORD" >> .env
             # --- R2 ADDITION END ---
             chmod 600 .env
 
