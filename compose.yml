@@ -118,7 +118,7 @@ services:
         echo "Clearing zombie locks..."
         rclone delete r2:cactuz-mc-backups/locks --min-age 0s || true
         echo "Locks cleared. Handing over to mc-backup..."
-        exec /entrypoint.sh
+        exec /usr/bin/entrypoint.sh
 
     environment:
       RESTIC_HOSTNAME: mc-backup-prod
