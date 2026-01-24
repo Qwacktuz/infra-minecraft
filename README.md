@@ -30,6 +30,10 @@ docker container inspect -f "{{.State.Health.Status}}" <container-name>
 # Spin up stack/stop stack
 docker compose up -d
 docker compose down
+
+# Verify restic integrity
+docker compose exec backups restic check
+docker compose exec backups restic ls latest
 ```
 
 ### How to get old java console vibe (beware CTRL-C)
