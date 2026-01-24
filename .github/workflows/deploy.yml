@@ -24,7 +24,7 @@ jobs:
           host: ${{ vars.TS_HOST }}
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./compose.yml,./alloy/,./prometheus/,./loki/,./static/,./scripts/"
+          source: "./app/"
           target: "/home/${{ vars.USERNAME }}/mc-prod"
 
       - name: Deploy to VPS
