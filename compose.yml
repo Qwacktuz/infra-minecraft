@@ -112,7 +112,7 @@ services:
       INITIAL_DELAY: 5m
       BACKUP_INTERVAL: 6h
       PRUNE_BACKUPS_DAYS: 3
-      PRUNE_BACKUPS_COUNT: 5
+      PRUNE_BACKUPS_COUNT: 4
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
