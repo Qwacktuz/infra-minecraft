@@ -116,7 +116,7 @@ services:
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
       # Compression & Size Savings (exclude bluemap)
-      BACKUP_EXCLUDES: "bluemap,dynmap,logs,cache,*.jar,web,*.map"
+      EXCLUDES: "bluemap,dynmap,logs,cache,*.jar,*.tmp,web,*.map"
 
       BACKUP_METHOD: "restic"
       RESTIC_PASSWORD: "${RESTIC_PASSWORD}"
