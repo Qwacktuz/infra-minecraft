@@ -111,8 +111,6 @@ services:
     environment:
       INITIAL_DELAY: 5m
       BACKUP_INTERVAL: 6h
-      # PRUNE_BACKUPS_DAYS: 7
-      # PRUNE_BACKUPS_COUNT: 5
       PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
@@ -130,15 +128,10 @@ services:
       RCLONE_CONFIG_R2_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
       RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
       RCLONE_CONFIG_R2_ENDPOINT: "${R2_ENDPOINT}"
-
       RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
-
-      # Speed up upload for big files (not needed for restic)
-      # RCLONE_ARGS: "--fast-list --checksum"
     volumes:
       - ./data/minecraft:/data:ro
       - restic_cache:/root/.cache/restic
-      # - ./backups:/backups
     depends_on:
       minecraft-service:
         condition: service_healthy
