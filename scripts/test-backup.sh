@@ -33,7 +33,9 @@ if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
   echo "Checking contents:"
 
   echo "Changing ownership to you..."
-  sudo chown -R "$(whoami):$(whoami)" ~/mc-prod
+  echo "⚠️ Assuming hardcoded path ~/mc-prod/scripts exists"
+  # FIXME: THIS PATH IS HARDCODED, BEWARE
+  sudo chown -R "$(whoami):$(whoami)" ~/mc-prod/scripts
   ls -lh "$TEST_DIR/data"
 
   echo "Cleaning up test files..."
