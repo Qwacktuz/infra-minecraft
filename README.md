@@ -2,6 +2,8 @@
 
 Minecraft + IaC = ❤️
 
+GitOps minecraft infrastructure as code for cloud agnostic deployments secured through Tailscale and docker rootless. Now featuring incremental restic backups to cloudflare R2 bucket.
+
 ## Commands
 
 Quick commands for management
