@@ -36,6 +36,22 @@ docker compose exec backups restic check
 docker compose exec backups restic ls latest
 ```
 
+#### How to download world (to prune manually with mcaselector)
+
+```bash
+# Downlaod
+ssh prd-hel1-mc-01 "cd ~/mc-prod && docker compose stop minecraft-service"
+rsync -avzP prd-hel1-mc-01:~/mc-prod/data/minecraft/world/ ./local_minecraft_world/
+
+# Upload
+rsync -avzP ./local_minecraft_world/ prd-hel1-mc-01:~/mc-prod/data/minecraft/world_pruned/
+# optionally move to world/ instead of world_pruned/
+
+# Give Minecraft the correct permissions
+# ssh into the VPS
+sudo chown -R 100999:100999 ~/mc-prod/data/minecraft
+```
+
 ### How to get old java console vibe (beware CTRL-C)
 
 Add this to `compose.yml`
