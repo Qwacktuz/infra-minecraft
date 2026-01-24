@@ -11,7 +11,7 @@ services:
       EULA: true
       TYPE: FABRIC
       VERSION: LATEST
-      MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%.\ Aka A §g§lminecraft§r §u-.-§r §5§mServer§r\\nmade by §a§kkaktus"
+      MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%.\ Aka A §g§lminecraft§r §u-.-§r §5§mServer§r made by §a§kkaktus"
       ICON: "/icon.png"
       OVERRIDE_ICON: true
       LEVEL: "world"
@@ -126,6 +126,41 @@ services:
         aliases:
           - mc-backup
 
+  offsite-backup:
+    image: rclone/rclone:latest
+    container_name: offsite-backup
+    restart: unless-stopped
+    environment:
+      RCLONE_CONFIG_MYREMOTE_TYPE: "s3"
+      RCLONE_CONFIG_MYREMOTE_PROVIDER: "Cloudflare"
+      RCLONE_CONFIG_MYREMOTE_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
+      RCLONE_CONFIG_MYREMOTE_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
+      RCLONE_CONFIG_MYREMOTE_ENDPOINT: "${R2_ENDPOINT}"
+      # Sync settings
+      SYNC_SRC: "/data/backups"
+      SYNC_DEST: "myremote:cactuz-mc-backups"
+      CRON_SCHEDULE: "0 */6 * * *" # Run every 6 hours
+    volumes:
+      # Mount the SAME folder as the 'backups' container
+      - ./backups:/data/backups
+    entrypoint: "/bin/sh"
+    command:
+      - -c
+      - |
+        echo "Starting Rclone..."
+        while true; do
+          echo "Syncing backups to Cloudflare R2..."
+          rclone sync /data/backups myremote:cactuz-mc-backups -v
+          echo "Sync complete. Sleeping for 6 hours..."
+          sleep 21600
+        done
+    depends_on:
+      - backups
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
@@ -170,7 +205,7 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-remote-write-receiver"
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -185,7 +220,7 @@ services:
     container_name: loki
     restart: unless-stopped
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     # command: "-config.file=/etc/loki/local-config.yaml"
     # volumes:
     #   - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
