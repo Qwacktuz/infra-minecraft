@@ -134,6 +134,7 @@ services:
     volumes:
       - ./data/minecraft:/data:ro
       - restic_cache:/root/.cache/restic
+      - ./rclone:/config/rclone
     depends_on:
       minecraft-service:
         condition: service_healthy
@@ -263,4 +264,5 @@ volumes:
   grafana_data:
   portainer_data:
   alloy_data:
+  rclone_config:
   restic_cache:
