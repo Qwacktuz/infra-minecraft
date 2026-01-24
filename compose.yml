@@ -108,8 +108,21 @@ services:
     image: itzg/mc-backup
     container_name: mc-backup
     restart: unless-stopped
+
+    hostname: mc-backup-prod
     stop_grace_period: 2m
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo "Clearing zombie locks..."
+        rclone delete r2:cactuz-mc-backups/locks --min-age 0s || true
+        echo "Locks cleared. Handing over to mc-backup..."
+        exec /entrypoint.sh
+
     environment:
+      RESTIC_HOSTNAME: mc-backup-prod
+
       INITIAL_DELAY: 1m
       BACKUP_INTERVAL: 6h
       PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
