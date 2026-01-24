@@ -115,6 +115,19 @@ services:
       PRUNE_BACKUPS_COUNT: 5
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
+
+      # Compression & Size Savings (exclude bluemap)
+      BACKUP_EXCLUDES: "bluemap,dynmap,logs,cache,*.jar,web,*.map"
+
+      # --- CLOUDFLARE R2 CONFIGURATION ---
+      DESTINATION: "r2-backup:cactuz-mc-backups"
+      RCLONE_CONFIG_R2_BACKUP_TYPE: "s3"
+      RCLONE_CONFIG_R2_BACKUP_PROVIDER: "Cloudflare"
+      RCLONE_CONFIG_R2_BACKUP_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
+      RCLONE_CONFIG_R2_BACKUP_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
+      RCLONE_CONFIG_R2_BACKUP_ENDPOINT: "${R2_ENDPOINT}"
+      # Speed up upload for big files
+      RCLONE_ARGS: "--fast-list --checksum"
     volumes:
       - ./data/minecraft:/data:ro
       - ./backups:/backups
@@ -125,41 +138,6 @@ services:
       minecraft-network:
         aliases:
           - mc-backup
-
-  offsite-backup:
-    image: rclone/rclone:latest
-    container_name: offsite-backup
-    restart: unless-stopped
-    environment:
-      RCLONE_CONFIG_MYREMOTE_TYPE: "s3"
-      RCLONE_CONFIG_MYREMOTE_PROVIDER: "Cloudflare"
-      RCLONE_CONFIG_MYREMOTE_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
-      RCLONE_CONFIG_MYREMOTE_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
-      RCLONE_CONFIG_MYREMOTE_ENDPOINT: "${R2_ENDPOINT}"
-      # Sync settings
-      SYNC_SRC: "/data/backups"
-      SYNC_DEST: "myremote:cactuz-mc-backups"
-      CRON_SCHEDULE: "0 */6 * * *" # Run every 6 hours
-    volumes:
-      # Mount the SAME folder as the 'backups' container
-      - ./backups:/data/backups
-    entrypoint: "/bin/sh"
-    command:
-      - -c
-      - |
-        echo "Starting Rclone..."
-        while true; do
-          echo "Syncing backups to Cloudflare R2..."
-          rclone sync /data/backups myremote:cactuz-mc-backups -v
-          echo "Sync complete. Sleeping for 6 hours..."
-          sleep 21600
-        done
-    depends_on:
-      - backups
-    deploy:
-      resources:
-        limits:
-          memory: 128M
 
   grafana:
     image: grafana/grafana-oss:latest
