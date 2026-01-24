@@ -108,6 +108,7 @@ services:
     image: itzg/mc-backup
     container_name: mc-backup
     restart: unless-stopped
+    stop_grace_period: 2m
     environment:
       INITIAL_DELAY: 1m
       BACKUP_INTERVAL: 6h
