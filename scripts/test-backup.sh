@@ -31,6 +31,9 @@ if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
 
   echo "✅ Download complete."
   echo "Checking contents:"
+
+  echo "Changing ownership to you..."
+  sudo chown -R "$(whoami):$(whoami)" ~/mc-prod
   ls -lh "$TEST_DIR/data"
 
   echo "Cleaning up test files..."
