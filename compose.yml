@@ -109,7 +109,7 @@ services:
     container_name: mc-backup
     restart: unless-stopped
     environment:
-      INITIAL_DELAY: 5m
+      INITIAL_DELAY: 1m
       BACKUP_INTERVAL: 6h
       PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       RCON_HOST: minecraft-service
