@@ -5,12 +5,12 @@ prometheus.remote_write "default" {
 }
 
 // Scrape minecraft 
-prometheus.scrape "minecraft" {
+prometheus.scrape "minecraft-prometheus" {
 	targets = [{
 		__address__ = "minecraft-service:25585",
 	}]
 	forward_to      = [prometheus.remote_write.default.receiver]
-	job_name        = "minecraft"
+	job_name        = "minecraft-prometheus"
 	scrape_interval = "10s"
 }
 
@@ -76,7 +76,7 @@ discovery.relabel "minecraft_filter" {
   rule {
     action = "replace"
     target_label = "job"
-    replacement = "minecraft"
+    replacement = "minecraft-loki"
   }
 }
 
