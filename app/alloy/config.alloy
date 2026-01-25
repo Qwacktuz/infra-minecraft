@@ -75,6 +75,6 @@ loki.source.file "default" {
 local.file_match "default" {
   path_targets = [{
     __address__ = "localhost",
-    __path__    = "/var/log/*.log",
+    __path__    = "/var/minecraft/logs/latest.log",
   }]
 }
