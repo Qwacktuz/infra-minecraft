@@ -11,7 +11,7 @@ prometheus.scrape "minecraft" {
 	}]
 	forward_to      = [prometheus.remote_write.default.receiver]
 	job_name        = "minecraft"
-	scrape_interval = "1s"
+	scrape_interval = "10s"
 }
 
 // Node exporter integration
@@ -60,6 +60,27 @@ prometheus.scrape "node_exporter" {
 	forward_to = [prometheus.remote_write.default.receiver]
 }
 
+discovery.docker "all_containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+// Filter to find the minecraft container only
+discovery.relabel "minecraft_filter" {
+  targets = discovery.docker.all_containers.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/.*(minecraft|mc).*" 
+    action        = "keep"
+  }
+  
+  rule {
+    action = "replace"
+    target_label = "job"
+    replacement = "minecraft"
+  }
+}
+
+
 // Define where to send logs (loki container)
 loki.write "default" {
   endpoint {
@@ -67,14 +88,9 @@ loki.write "default" {
   }
 }
 
-loki.source.file "default" {
-  targets    = local.file_match.default.targets
+loki.source.docker "minecraft_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.minecraft_filter.output
   forward_to = [loki.write.default.receiver]
 }
 
-local.file_match "default" {
-  path_targets = [{
-    __address__ = "localhost",
-    __path__    = "/var/minecraft/logs/latest.log",
-  }]
-}

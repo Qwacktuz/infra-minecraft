@@ -223,7 +223,7 @@ services:
       - /run/udev/data:/host/run/udev/data:ro
 
       # Mount minecraft logs
-      - ./data/minecraft/logs:/var/minecraft/logs
+      # - ./data/minecraft/logs:/var/log/minecraft:ro
     networks:
       minecraft-network:
         aliases:
