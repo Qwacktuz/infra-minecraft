@@ -78,7 +78,7 @@ jobs:
             fi
 
             # Generate .env file
-            : > .env
+            : > app/.env
             printf "TS_IP=%s\n" "$(/usr/bin/tailscale ip -4)" >> .env
             printf "DOCKER_UID=%s\n" "$(id -u)" >> .env
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
