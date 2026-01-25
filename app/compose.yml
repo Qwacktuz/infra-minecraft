@@ -187,9 +187,9 @@ services:
     restart: unless-stopped
     ports:
       - "${TS_IP}:3100:3100"
-    command: "-config.file=/etc/loki/local-config.yaml"
+    # command: "-config.file=/etc/loki/local-config.yaml"
     volumes:
-      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+      # - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki_data:/loki
     networks:
       minecraft-network:
