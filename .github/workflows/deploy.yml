@@ -51,8 +51,8 @@ jobs:
             export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
             export PATH=/home/$HOME/bin:$PATH
 
-            mkdir -p $HOME/mc-prod
-            cd $HOME/mc-prod
+            mkdir -p $HOME/app
+            cd $HOME/app
 
             if docker compose ps --services --filter "status=running" | grep -q "minecraft-service"; then
               echo "Minecraft server is running. Sending restart notifications..."
@@ -78,7 +78,7 @@ jobs:
             fi
 
             # Generate .env file
-            : > app/.env
+            : > .env
             printf "TS_IP=%s\n" "$(/usr/bin/tailscale ip -4)" >> .env
             printf "DOCKER_UID=%s\n" "$(id -u)" >> .env
             printf "DOCKER_GID=%s\n" "$(id -g)" >> .env
