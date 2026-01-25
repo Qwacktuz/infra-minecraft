@@ -27,6 +27,7 @@ ssh -t prd-hel1-mc-01 "sudo chown -R 100999:100999 ~/mc-prod/data/minecraft && e
 ## TODO
 
 - Set up Grafana Cloud
+- Set up docker swarm / hashicorp nomad / k3s
 - Find a easier way to whitelist people -> portainer? 🤔
 - Swapfile on the server?
 - Move stack to OpenTofu (OSS Terraform)
