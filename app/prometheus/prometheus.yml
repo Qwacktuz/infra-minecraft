@@ -1,12 +1,8 @@
 global:
-  scrape_interval: 10s
+  scrape_interval: 30s
 
 scrape_configs:
-  # DELETE the minecraft job here. Alloy is handling it.
-  # - job_name: "minecraft"
-  #   static_configs:
-  #     - targets: ["mc:25585"]
-
-  - job_name: "node_exporter"
+  # Prometheus can scrape itself to monitor its own health
+  - job_name: "prometheus"
     static_configs:
-      - targets: ["node-exporter:9100"]
+      - targets: ["prometheus:9090"]

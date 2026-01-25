@@ -7,6 +7,7 @@ services:
       - "25565:25565"
       - "25565:25565/udp"
       - "24454:24454/udp"
+      - "25585:25585" # fabricexporter
     environment:
       EULA: true
       TYPE: FABRIC
@@ -186,10 +187,9 @@ services:
     restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
       - "--web.enable-remote-write-receiver"
     ports:
-      - "127.0.0.1:9090:9090"
+      - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -204,11 +204,11 @@ services:
     container_name: loki
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3100:3100"
-    # command: "-config.file=/etc/loki/local-config.yaml"
-    # volumes:
-    #   - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
-    #   - loki_data:/loki
+      - "3100:3100"
+    command: "-config.file=/etc/loki/local-config.yaml"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
     networks:
       minecraft-network:
         aliases:
@@ -224,7 +224,6 @@ services:
     command:
       [
         "run",
-        "--storage.path=/var/lib/alloy/data",
         "--server.http.listen-addr=0.0.0.0:12345",
         "/etc/alloy/config.alloy",
       ]
@@ -232,10 +231,6 @@ services:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
       # Mount the Rootless Socket & Logs
       - /run/user/${DOCKER_UID}/docker.sock:/var/run/docker.sock
-      - /home/${USERNAME}/.local/share/docker/containers:/var/lib/docker/containers:ro
-      - alloy_data:/var/lib/alloy/data
-    depends_on:
-      - loki
     networks:
       minecraft-network:
         aliases:
@@ -265,4 +260,3 @@ volumes:
   loki_data:
   grafana_data:
   portainer_data:
-  alloy_data:

@@ -1,58 +1,55 @@
-discovery.docker "containers" {
-  host = "unix:///var/run/docker.sock"
-}
-
-loki.source.docker "logs" {
-  host       = "unix:///var/run/docker.sock"
-  targets    = discovery.docker.containers.targets
-  forward_to = [loki.process.mc_processing.receiver]
-}
-
-loki.source.api "listener" {
-    http {
-        listen_address = "127.0.0.1"
-        listen_port    = 3100
-    }
-    labels = { "source" = "api" }
-    forward_to = [loki.process.mc_processing.receiver]
-}
-
-
-loki.process "mc_processing" {
-  stage.docker { } 
-
-  stage.labels {
-    values = {
-      container = "prd-hel1-mc-01",
-    }
+// Where to send metrics
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
   }
-
-  stage.multiline {
-    firstline     = "^\\[\\d{2}:\\d{2}:\\d{2}\\]"
-    max_wait_time = "3s"
-  }
-
-  forward_to = [loki.write.local_loki.receiver]
 }
 
-loki.write "local_loki" {
+// Minecraft job
+prometheus.scrape "minecraft" {
+  targets = [
+    {
+      __address__ = "minecraft-service:25585", 
+      job         = "minecraft",
+    },
+  ]
+
+  scrape_interval = "1s"
+  // Send scraped data to the remote_write component defined above
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+// Node Exporter
+prometheus.scrape "node_exporter" {
+  targets = [
+    {
+      __address__ = "node-exporter:9100", 
+      job         = "node_exporter",
+    },
+  ]
+
+  scrape_interval = "30s"
+  forward_to      = [prometheus.remote_write.default.receiver]
+}
+
+// Define where to send logs (loki container)
+loki.write "default" {
   endpoint {
     url = "http://loki:3100/loki/api/v1/push"
   }
 }
 
-prometheus.scrape "node_exporter" {
-  targets = [{"__address__" = "node-exporter:9100"}]
-  forward_to = [prometheus.remote_write.local_prom.receiver]
+// Find all Docker containers automatically
+discovery.docker "all_containers" {
+  host = "unix:///var/run/docker.sock"
 }
 
-prometheus.scrape "minecraft" {
-  targets = [{"__address__" = "mc:25585"}]
-  forward_to = [prometheus.remote_write.local_prom.receiver]
-}
-
-prometheus.remote_write "local_prom" {
-  endpoint {
-    url = "http://prometheus:9090/api/v1/write"
-  }
+// Process the logs (add labels based on container names)
+loki.source.docker "default" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.all_containers.targets
+  forward_to = [loki.write.default.receiver]
+  
+  // Clean up labels so logs look nice in Grafana
+  relabel_rules = discovery.docker.all_containers.relabel_rules
 }
