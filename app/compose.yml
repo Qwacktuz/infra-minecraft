@@ -117,7 +117,7 @@ services:
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
       # Compression & Size Savings (exclude bluemap)
-      EXCLUDES: "bluemap,dynmap,logs,cache,*.jar,*.tmp,web,*.map"
+      EXCLUDES: "bluemap,logs,cache,emotes,*.tmp,web,*.map"
 
       PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       BACKUP_METHOD: "restic"
@@ -212,7 +212,7 @@ services:
       ]
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
-      # Mount the Rootless Socket & Logs
+      # Mount the rootless socket & logs
       - /run/user/${DOCKER_UID}/docker.sock:/var/run/docker.sock
       - alloy_data:/var/lib/alloy/data
 
