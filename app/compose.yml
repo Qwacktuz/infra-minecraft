@@ -171,7 +171,7 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--web.enable-remote-write-receiver"
     ports:
-      - "9090:9090"
+      - "${TS_IP}:9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -186,7 +186,7 @@ services:
     container_name: loki
     restart: unless-stopped
     ports:
-      - "3100:3100"
+      - "${TS_IP}:3100:3100"
     command: "-config.file=/etc/loki/local-config.yaml"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
@@ -202,7 +202,7 @@ services:
     container_name: alloy
     restart: unless-stopped
     ports:
-      - "12345:12345"
+      - "${TS_IP}:12345:12345"
     command:
       [
         "run",
@@ -221,6 +221,9 @@ services:
       - /sys:/host/sys:ro
       - /proc:/host/proc:ro
       - /run/udev/data:/host/run/udev/data:ro
+
+      # Mount minecraft logs
+      - ./data/minecraft/logs:/var/log
     networks:
       minecraft-network:
         aliases:
