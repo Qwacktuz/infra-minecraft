@@ -25,7 +25,7 @@ jobs:
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./app/"
-          target: "/home/${{ vars.USERNAME }}/mc-prod"
+          target: "/home/${{ vars.USERNAME }}"
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1
