@@ -5,12 +5,12 @@ prometheus.remote_write "default" {
 }
 
 // Scrape minecraft 
-prometheus.scrape "minecraft-prometheus" {
+prometheus.scrape "minecraft_metrics" {
 	targets = [{
 		__address__ = "minecraft-service:25585",
 	}]
 	forward_to      = [prometheus.remote_write.default.receiver]
-	job_name        = "minecraft-prometheus"
+	job_name        = "minecraft_metrics"
 	scrape_interval = "10s"
 }
 
@@ -69,14 +69,14 @@ discovery.relabel "minecraft_filter" {
   targets = discovery.docker.all_containers.targets
   rule {
     source_labels = ["__meta_docker_container_name"]
-    regex         = "/.*(minecraft|mc).*" 
-    action        = "keep"
+    regex = "/.*(fabric-server).*" 
+    action = "keep"
   }
   
   rule {
     action = "replace"
     target_label = "job"
-    replacement = "minecraft-loki"
+    replacement = "fabric-server_logs"
   }
 }
 
@@ -89,8 +89,8 @@ loki.write "default" {
 }
 
 loki.source.docker "minecraft_logs" {
-  host       = "unix:///var/run/docker.sock"
-  targets    = discovery.relabel.minecraft_filter.output
+  host = "unix:///var/run/docker.sock"
+  targets = discovery.relabel.minecraft_filter.output
   forward_to = [loki.write.default.receiver]
 }
 
