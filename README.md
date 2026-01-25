@@ -2,7 +2,9 @@
 
 Minecraft + IaC = ❤️
 
-GitOps minecraft infrastructure as code for cloud agnostic deployments secured through Tailscale and docker rootless. Now featuring incremental restic backups to cloudflare R2 bucket.
+GitOps minecraft infrastructure as code for cloud agnostic deployments secured through Tailscale and docker rootless. Now featuring incremental restic backups to Cloudflare R2 bucket.
+Now featuring beautiful monitoring and alerting through Grafana!
+Real time logs and metric collection using loki, prometheus and alloy!
 
 ### How to download world
 
@@ -24,6 +26,7 @@ ssh -t prd-hel1-mc-01 "sudo chown -R 100999:100999 ~/mc-prod/data/minecraft && e
 
 ## TODO
 
+- Set up Grafana Cloud
 - Find a easier way to whitelist people -> portainer? 🤔
 - Swapfile on the server?
 - Move stack to OpenTofu (OSS Terraform)
