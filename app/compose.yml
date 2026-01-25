@@ -116,7 +116,7 @@ services:
       - no-new-privileges:true
     environment:
       INITIAL_DELAY: 1m
-      BACKUP_INTERVAL: 6h
+      BACKUP_INTERVAL: 30m
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
