@@ -155,6 +155,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes:
+      - ./grafana:/var/lib/grafana
       - grafana_data:/var/lib/grafana
     networks:
       minecraft-network:
