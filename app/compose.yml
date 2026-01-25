@@ -259,7 +259,6 @@ services:
 networks:
   minecraft-network:
     name: minecraft
-    external: true
 
 volumes:
   prometheus_data:
