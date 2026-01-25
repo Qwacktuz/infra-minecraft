@@ -104,22 +104,21 @@ services:
         aliases:
           - mc-server
 
-  backups:
+  backup:
     image: itzg/mc-backup
     container_name: mc-backup
+    hostname: mc-backup-worker
     restart: unless-stopped
     environment:
-      RESTIC_HOSTNAME: mc-backup-prod
-
       INITIAL_DELAY: 1m
       BACKUP_INTERVAL: 6h
-      PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
       # Compression & Size Savings (exclude bluemap)
       EXCLUDES: "bluemap,dynmap,logs,cache,*.jar,*.tmp,web,*.map"
 
+      PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       BACKUP_METHOD: "restic"
       RESTIC_PASSWORD: "${RESTIC_PASSWORD}"
       RESTIC_REPOSITORY: "rclone:r2:cactuz-mc-backups"
@@ -133,8 +132,6 @@ services:
       RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
     volumes:
       - ./data/minecraft:/data:ro
-      - restic_cache:/root/.cache/restic
-      - rclone_config:/config/rclone
     depends_on:
       minecraft-service:
         condition: service_healthy
@@ -264,5 +261,3 @@ volumes:
   grafana_data:
   portainer_data:
   alloy_data:
-  rclone_config:
-  restic_cache:
