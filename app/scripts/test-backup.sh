@@ -6,12 +6,12 @@ echo "Checking connection to Cloudflare R2..."
 
 # 1. List Snapshots
 echo "Step 1: Listing available snapshots..."
-docker compose run --rm --entrypoint restic backups -r rclone:r2:cactuz-mc-backups snapshots
+docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
 
 # 2. Verify Integrity
 echo ""
 echo "Step 2: verifying data integrity (checking hashes)..."
-docker compose run --rm --entrypoint restic backups -r rclone:r2:cactuz-mc-backups check
+docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups check
 echo "✅ Integrity check passed."
 
 # 3. Dry-Run Restore
@@ -27,7 +27,7 @@ if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
   docker compose run --rm \
     -v "$(pwd)/$TEST_DIR:/target" \
     --entrypoint restic \
-    backups -r rclone:r2:cactuz-mc-backups restore latest --target /target
+    backup -r rclone:r2:cactuz-mc-backups restore latest --target /target
 
   echo "✅ Download complete."
   echo "Checking contents:"

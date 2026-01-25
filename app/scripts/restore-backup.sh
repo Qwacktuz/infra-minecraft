@@ -6,7 +6,7 @@ echo "This will STOP the server and replace the current world data."
 echo ""
 
 # 1. Select Snapshot
-docker compose run --rm --entrypoint restic backups -r rclone:r2:cactuz-mc-backups snapshots
+docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
 echo ""
 read -r -p "Enter Snapshot ID to restore (or type 'latest'): " SNAP_ID
 
@@ -34,7 +34,7 @@ mkdir -p data/minecraft
 # 4. Restore
 echo "📥 Restoring data from Cloudflare..."
 # Restore to / because the backup path inside the repo is /data
-docker compose run --rm --entrypoint restic backups \
+docker compose run --rm --entrypoint restic backup \
   -r rclone:r2:cactuz-mc-backups restore "$SNAP_ID" --target /
 
 # 5. Fix Permissions
