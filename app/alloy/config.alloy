@@ -1,3 +1,10 @@
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+// Scrape minecraft 
 prometheus.scrape "minecraft" {
 	targets = [{
 		__address__ = "minecraft-service:25585",
@@ -7,13 +14,45 @@ prometheus.scrape "minecraft" {
 	scrape_interval = "10s"
 }
 
+// Node exporter integration
+discovery.relabel "node_exporter" {
+  targets = prometheus.exporter.unix.node_exporter.targets
+
+  rule {
+    target_label = "instance"
+    replacement = constants.hostname
+  }
+
+  rule {
+    target_label = "job"
+    replacement = "integrations/node_exporter"
+  }
+}
+
+// Node exporter configuration for system metrics
+prometheus.exporter.unix "node_exporter" {
+  disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
+  enable_collectors = ["meminfo"]
+
+  filesystem {
+    fs_types_exclude = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|tmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+    mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+)($|/)"
+    mount_timeout = "5s"
+  }
+
+  netclass {
+    ignored_devices = "^(veth.*|cali.*|[a-f0-9]{15})$"
+  }
+
+  netdev {
+    device_exclude = "^(veth.*|cali.*|[a-f0-9]{15})$"
+  }
+}
+
 prometheus.scrape "node_exporter" {
-	targets = [{
-		__address__ = "node-exporter:9100",
-	}]
-	forward_to      = [prometheus.remote_write.default.receiver]
-	job_name        = "node_exporter"
-	scrape_interval = "10s"
+	scrape_interval = "15s"
+	targets = discovery.relabel.node_exporter.output
+	forward_to = [prometheus.remote_write.default.receiver]
 }
 
 // Define where to send logs (loki container)
@@ -33,7 +72,4 @@ loki.source.docker "default" {
   host       = "unix:///var/run/docker.sock"
   targets    = discovery.docker.all_containers.targets
   forward_to = [loki.write.default.receiver]
-  
-  // Clean up labels so logs look nice in Grafana
-  relabel_rules = discovery.docker.all_containers.relabel_rules
 }
