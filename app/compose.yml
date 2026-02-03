@@ -65,8 +65,7 @@ services:
         chunky
         bluemap
         carpet
-        #carpet-extra
-        carpet-tis-addition
+        quickcarpet
         simple-voice-chat
         #plasmo-voice # TODO: migrate from svc
         calcmod
