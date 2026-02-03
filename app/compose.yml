@@ -64,7 +64,6 @@ services:
         view-distance-fix
         chunky
         bluemap
-        carpet
         quickcarpet
         simple-voice-chat
         #plasmo-voice # TODO: migrate from svc
