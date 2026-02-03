@@ -64,6 +64,8 @@ services:
         view-distance-fix
         chunky
         bluemap
+        carpet
+        carpet-extra
         simple-voice-chat
         #plasmo-voice # TODO: migrate from svc
         calcmod
