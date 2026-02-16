@@ -13,7 +13,8 @@ services:
     environment:
       EULA: true
       TYPE: FABRIC
-      VERSION_FROM_MODRINTH_PROJECTS: true # dynamically set VERSION if all modrinth projects support latest version
+
+      # VERSION_FROM_MODRINTH_PROJECTS: true # dynamically set VERSION if all modrinth projects support latest version
       MOTD: "%TYPE% server running §l§cMinecraft§r §n%VERSION%.\ Aka A §g§lminecraft§r §u-.-§r §5§mServer§r made by §a§kkaktus"
       ICON: "/icon.png"
       OVERRIDE_ICON: true
@@ -61,7 +62,6 @@ services:
         clumps
         alternate-current
         servercore
-        #fastback
         no-chat-reports
         view-distance-fix
         chunky
