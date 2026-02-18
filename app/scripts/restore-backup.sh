@@ -1,12 +1,13 @@
 #!/bin/bash
 set -e
 
+cd "$HOME/app" || exit 1
+
 echo "⚠️  --- DANGER: MINECRAFT RESTORE SCRIPT ---"
 echo "This will STOP the server and replace the current world data."
-echo ""
 
 # 1. Select Snapshot
-docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
+docker compose run --rm --no-deps --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
 echo ""
 read -r -p "Enter Snapshot ID to restore (or type 'latest'): " SNAP_ID
 
@@ -25,22 +26,35 @@ fi
 echo "🛑 Stopping Minecraft Server..."
 docker compose stop minecraft-service
 
-# 3. Safety Swap (Preserve broken state)
+# 3. Safety Swap
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 echo "📦 Moving current data to 'data/minecraft_pre_restore_$TIMESTAMP'..."
-mv data/minecraft "data/minecraft_pre_restore_$TIMESTAMP"
+if [ -d "data/minecraft" ]; then
+  mv data/minecraft "data/minecraft_pre_restore_$TIMESTAMP"
+fi
 mkdir -p data/minecraft
 
 # 4. Restore
 echo "📥 Restoring data from Cloudflare..."
-# Restore to / because the backup path inside the repo is /data
-docker compose run --rm --entrypoint restic backup \
-  -r rclone:r2:cactuz-mc-backups restore "$SNAP_ID" --target /
+# We mount to /output. Restic restores the backup path, creating /output/data/...
+docker compose run --rm --no-deps \
+  -v "$(pwd)/data/minecraft:/output" \
+  --entrypoint restic \
+  backup \
+  -r rclone:r2:cactuz-mc-backups restore "$SNAP_ID" --target /output
 
-# 5. Fix Permissions
-echo "🔧 Fixing file permissions (uid:1000)..."
-# Run a tiny alpine container to ensure the restored files belong to the correct user
-docker run --rm -v "$(pwd)/data/minecraft:/data" alpine chown -R 1000:1000 /data
+# 5. Flatten and Fix Permissions (Inside Container)
+echo "🔧 Flattening structure and fixing permissions..."
+# We do this inside Alpine because the host shell lacks permissions to move files owned by sub-uids
+docker run --rm -v "$(pwd)/data/minecraft:/data" alpine sh -c "
+  if [ -d /data/data ]; then
+    echo 'Moving files out of nested data folder...'
+    find /data/data -mindepth 1 -maxdepth 1 -exec mv -t /data/ {} +
+    rmdir /data/data
+  fi
+  echo 'Setting ownership to 1000:1000...'
+  chown -R 1000:1000 /data
+"
 
 # 6. Restart
 echo "🚀 Starting Minecraft Server..."
@@ -49,4 +63,4 @@ docker compose up -d minecraft-service
 echo "✅ Restore Complete!"
 echo "Old data saved at: data/minecraft_pre_restore_$TIMESTAMP"
 echo "Monitoring logs for 10 seconds..."
-timeout 10s docker compose logs -f minecraft-service || true
+timeout 20s docker compose logs -f minecraft-service || true
