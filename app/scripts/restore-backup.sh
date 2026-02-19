@@ -1,13 +1,29 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-cd "$HOME/app" || exit 1
+APP_DIR="$HOME/app"
+
+if [ -z "${DOCKER_HOST:-}" ] && [ -S "/run/user/$(id -u)/docker.sock" ]; then
+  export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
+fi
+
+cd "$APP_DIR" || exit 1
+
+if [ ! -f ".env" ]; then
+  echo "❌ Missing $APP_DIR/.env. Run deploy to generate it."
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source ".env"
+set +a
 
 echo "⚠️  --- DANGER: MINECRAFT RESTORE SCRIPT ---"
 echo "This will STOP the server and replace the current world data."
 
 # 1. Select Snapshot
-docker compose run --rm --no-deps --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
+docker compose run --rm --no-deps --entrypoint restic backup snapshots
 echo ""
 read -r -p "Enter Snapshot ID to restore (or type 'latest'): " SNAP_ID
 
@@ -40,11 +56,11 @@ docker compose run --rm --no-deps \
   -v "$(pwd)/data/minecraft:/data" \
   --entrypoint restic \
   backup \
-  -r "s3:${R2_ENDPOINT}/${R2_BUCKET_NAME}" restore "$SNAP_ID" --target /
+  restore "$SNAP_ID" --target /
 
 # 5. Fix permissions
 echo "🔧 Fixing permissions..."
-chown -R 100999:100999 data/minecraft
+docker run --rm -v "$(pwd)/data/minecraft:/data" alpine chown -R 1000:1000 /data
 
 # 4. Restore
 # echo "📥 Restoring data from Cloudflare..."

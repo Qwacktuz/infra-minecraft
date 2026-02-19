@@ -1,8 +1,14 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+APP_DIR="$HOME/app"
+
+if [ -z "${DOCKER_HOST:-}" ] && [ -S "/run/user/$(id -u)/docker.sock" ]; then
+  export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
+fi
 
 # Ensure we are in the correct directory
-cd "$HOME/app" || exit 1
+cd "$APP_DIR" || exit 1
 
 echo "running rollback..."
 echo "🔍 Searching for local pre-restore backups..."
@@ -39,9 +45,9 @@ docker compose stop minecraft-service
 
 # 3. Swap the folders
 echo "🗑️  Removing broken data/minecraft folder..."
-# We use sudo here just in case the failed restore left root-owned files
+# We avoid sudo to stay compatible with rootless Docker
 if [ -d "data/minecraft" ]; then
-  sudo rm -rf data/minecraft
+  rm -rf data/minecraft
 fi
 
 echo "🔙 Restoring old data folder..."

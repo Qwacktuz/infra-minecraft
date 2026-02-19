@@ -1,46 +1,34 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "🔍 --- Restic Backup Tester ---"
-echo "Checking connection to Cloudflare R2..."
+APP_DIR="$HOME/app"
 
-# 1. List Snapshots
-echo "Step 1: Listing available snapshots..."
-docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups snapshots
-
-# 2. Verify Integrity
-echo ""
-echo "Step 2: verifying data integrity (checking hashes)..."
-docker compose run --rm --entrypoint restic backup -r rclone:r2:cactuz-mc-backups check
-echo "✅ Integrity check passed."
-
-# 3. Dry-Run Restore
-echo ""
-read -r -p "Do you want to perform a dry-run download test? (Downloads to temp folder) [y/N]: " confirm
-if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
-  TEST_DIR="./restore-test-$(date +%s)"
-  mkdir -p "$TEST_DIR"
-
-  echo "Step 3: Restoring 'latest' to $TEST_DIR ..."
-
-  # Mount the test dir to /target inside the container
-  docker compose run --rm \
-    -v "$(pwd)/$TEST_DIR:/target" \
-    --entrypoint restic \
-    backup -r rclone:r2:cactuz-mc-backups restore latest --target /target
-
-  echo "✅ Download complete."
-  echo "Checking contents:"
-
-  echo "Changing ownership to you..."
-  echo "⚠️ Assuming hardcoded path ~/app/scripts exists"
-  # FIXME: THIS PATH IS HARDCODED, BEWARE
-  sudo chown -R "$(whoami):$(whoami)" ~/app/scripts
-  ls -lh "$TEST_DIR/data"
-
-  echo "Cleaning up test files..."
-  rm -rf "$TEST_DIR"
-  echo "✅ Cleanup complete. Test Passed."
-else
-  echo "Skipping download test."
+if [ -z "${DOCKER_HOST:-}" ] && [ -S "/run/user/$(id -u)/docker.sock" ]; then
+  export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
 fi
+
+cd "$APP_DIR" || exit 1
+
+if [ ! -f ".env" ]; then
+  echo "❌ Missing $APP_DIR/.env. Run deploy to generate it."
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source ".env"
+set +a
+
+echo "🔎 Running restic integrity check..."
+docker compose run --rm --no-deps --entrypoint restic backup check
+
+echo ""
+echo "📸 Listing available snapshots..."
+docker compose run --rm --no-deps --entrypoint restic backup snapshots
+
+echo ""
+echo "📊 Snapshot stats (latest)..."
+docker compose run --rm --no-deps --entrypoint restic backup stats latest
+
+echo ""
+echo "✅ Backup test complete!"
