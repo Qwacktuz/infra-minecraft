@@ -120,29 +120,20 @@ services:
       - no-new-privileges:true
     environment:
       INITIAL_DELAY: 1m
-      BACKUP_INTERVAL: 30m
+      BACKUP_INTERVAL: 1h
       RCON_HOST: minecraft-service
       RCON_PASSWORD: "${RCON_PASSWORD}"
 
       # Compression & Size Savings (exclude bluemap)
       EXCLUDES: "bluemap,logs,cache,emotes,*.tmp,web,*.map"
 
-      PRUNE_RESTIC_RETENTION: "--keep-daily 7 --keep-weekly 4 --keep-monthly 6"
+      PRUNE_RESTIC_RETENTION: "--keep-within 24h --keep-daily 7 --keep-weekly 4 --keep-monthly 6"
       BACKUP_METHOD: "restic"
+      RESTIC_REPOSITORY: "s3:${R2_ENDPOINT}/${R2_BUCKET_NAME}"
       RESTIC_PASSWORD: "${RESTIC_PASSWORD}"
-      RESTIC_REPOSITORY: "rclone:r2:cactuz-mc-backups"
-
-      # --- CLOUDFLARE R2 CONFIGURATION ---
-      RCLONE_CONFIG_R2_TYPE: "s3"
-      RCLONE_CONFIG_R2_PROVIDER: "Cloudflare"
-      RCLONE_CONFIG_R2_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
-      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
-      RCLONE_CONFIG_R2_ENDPOINT: "${R2_ENDPOINT}"
-
-      # workaround for https://github.com/itzg/docker-mc-backup/issues/213
-      RCLONE_LOG_LEVEL: ERROR
-      # needed for Cloudflare R2
-      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+      AWS_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY}"
+      RESTIC_OPTS: "-o s3.connections=10 -o s3.region=auto --compression auto"
     volumes:
       - ./data/minecraft:/data:ro
       # - ./rclone:/config/rclone
