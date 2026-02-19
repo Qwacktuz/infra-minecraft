@@ -90,6 +90,7 @@ jobs:
             printf "MC_OPS=%s\n" "$MC_OPS" >> .env
             printf "MC_WHITELIST=%s\n" "$MC_WHITELIST" >> .env
             # --- R2 ADDITION START ---
+            printf "R2_BUCKET_NAME=%s\n" "$R2_BUCKET_NAME" >> .env
             printf "R2_ACCESS_KEY_ID=%s\n" "$R2_ACCESS_KEY_ID" >> .env
             printf "R2_SECRET_ACCESS_KEY=%s\n" "$R2_SECRET_ACCESS_KEY" >> .env
             printf "R2_ENDPOINT=%s\n" "$R2_ENDPOINT" >> .env
