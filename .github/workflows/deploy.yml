@@ -47,7 +47,7 @@ jobs:
           username: ${{ vars.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Added R2 vars to the envs list
-          envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY,R2_ENDPOINT,RESTIC_PASSWORD
+          envs: RCON_PASSWORD,GRAFANA_PASSWORD,MC_OPS,MC_WHITELIST,R2_BUCKET_NAME,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY,R2_ENDPOINT,RESTIC_PASSWORD
           script: |
             # Explicitly export the docker host for the non-interactive shell
             export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
