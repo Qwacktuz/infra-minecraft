@@ -256,6 +256,7 @@ services:
 networks:
   minecraft-network:
     name: minecraft
+    external: true
 
 volumes:
   grafana_data:

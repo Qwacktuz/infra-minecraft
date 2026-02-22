@@ -50,6 +50,13 @@ docker compose exec backup restic check
 # List backed up files
 docker compose exec backup restic ls latest
 
+# Download latest snapshot (test restore)
+mkdir -p ~/app/restic-restore-test
+docker compose run --rm --no-deps \
+    -v ~/app/restic-restore-test:/restore \
+    --entrypoint restic backup \
+    restore latest --target /restore
+ls -la ~/app/restic-restore-test/data
 ```
 
 ### How to get old java console window (beware CTRL-C)
